@@ -5,7 +5,6 @@ const countriesContainer = document.querySelector('.countries');
 
 ///////////////////////////////////////
 
-
 const renderCountry = function (data, className = '') {
   const html = `
   <article class="country ${className}">
@@ -23,7 +22,7 @@ const renderCountry = function (data, className = '') {
   countriesContainer.insertAdjacentHTML('beforeend', html);
   countriesContainer.style.opacity = 1;
 };
-
+/*
 const getCountryAndNeighbour = function (country) {
 
   // Ajax call country 1
@@ -73,3 +72,30 @@ setTimeout(() => {
     }, 1000);
   }, 1000);
 }, 1000); // callback hell
+*/
+
+// const request = new XMLHttpRequest();
+// request.open('GET', `https://restcountries.com/v2/name/${country}`);
+// request.send();
+
+const request = fetch('https://restcountries.com/v2/name/portugal');
+console.log(request);
+
+/*
+const getCountryData = function (country) {
+  fetch(`https://restcountries.com/v2/name/${country}`).then(function (response) {
+    console.log(response);
+    return response.json(); // json()은 fetch를 통해 응답받은 모든 데이터에 사용가능하고 json function은 새로운 promise를 리턴한다
+  }).then(function (data) {
+    console.log(data); // .then은 새로운 promise이기 때문에 다시 then을 써줌
+    renderCountry(data[0]);
+  })
+}; //모든 promise는 then을 쓸 수 있다
+*/
+const getCountryData = function (country) {
+  fetch(`https://restcountries.com/v2/name/${country}`).then((response) =>
+    response.json())
+    .then((data) =>
+      renderCountry(data[0]));
+};
+getCountryData('portugal');
