@@ -20,8 +20,12 @@ const renderCountry = function (data, className = '') {
       `;
   // ${(+data.population / 1000000).toFixed(1)} +는 숫자형이 아닐경우 숫자형으로 변환 (Number랑 동일 역할)
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
+  //countriesContainer.style.opacity = 1;
 };
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  //countriesContainer.style.opacity = 1;
+}
 /*
 const getCountryAndNeighbour = function (country) {
 
@@ -92,6 +96,7 @@ const getCountryData = function (country) {
   })
 }; //모든 promise는 then을 쓸 수 있다
 */
+
 const getCountryData = function (country) {
   // Country1
   fetch(`https://restcountries.com/v2/name/${country}`).then(response =>
@@ -105,7 +110,20 @@ const getCountryData = function (country) {
       // Country2
       return fetch(`https://restcountries.com/v2/name/${neighbour}`);
 
-    }).then(response => response.json())
-    .then(data => renderCountry(data, 'neighbour'));
-}
-getCountryData('portugal');
+    }).then(response => response.json(),
+      // err => alert(err)
+    )
+    .then(data => renderCountry(data[0], 'neighbour'))
+    .catch(err => {
+      console.error(`${err} err occur !`);
+      renderError(`Something went wrong ${err.message}. Try again!`)
+    }) // chain의 모든 에러를 catch함, catch도 promise리턴함
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    })
+};
+
+btn.addEventListener('click', function () {
+  getCountryData('portugal');
+});
+getCountryData('sdfsfsaf');
