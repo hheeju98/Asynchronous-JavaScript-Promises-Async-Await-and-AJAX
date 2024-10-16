@@ -97,22 +97,38 @@ const getCountryData = function (country) {
 }; //모든 promise는 then을 쓸 수 있다
 */
 
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok)
+      throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
+};
+/*
 const getCountryData = function (country) {
   // Country1
-  fetch(`https://restcountries.com/v2/name/${country}`).then(response =>
-    response.json())
+  fetch(`https://restcountries.com/v2/name/${country}`)
+    .then(response => {
+      console.log(response, "response");
+      if (!response.ok)
+        throw new Error(`Country not found (${response.status})`)
+      return response.json();
+    })
     .then(data => {
       renderCountry(data[0]);
-      const neighbour = data[0].borders[0];
+      //const neighbour = data[0].borders[0];
+      const neighbour = "DSfsf";
 
       if (!neighbour) return;
 
       // Country2
       return fetch(`https://restcountries.com/v2/name/${neighbour}`);
 
-    }).then(response => response.json(),
+    }).then(response => {
+      if (!response.ok) throw new Error(`Country not found (${response.status})`);
+      return response.json();
       // err => alert(err)
-    )
+    })
     .then(data => renderCountry(data[0], 'neighbour'))
     .catch(err => {
       console.error(`${err} err occur !`);
@@ -121,9 +137,29 @@ const getCountryData = function (country) {
     .finally(() => {
       countriesContainer.style.opacity = 1;
     })
+};*/
+const getCountryData = function (country) {
+  // Country1
+  getJSON(`https://restcountries.com/v2/name/${country}`, 'Country not found')
+    .then(data => {
+      renderCountry(data[0]);
+      let neighbour = data[0].borders;
+      if (!neighbour || neighbour == 'undefined') throw new Error('No neighbour found!');
+      // Country2
+      return getJSON(`https://restcountries.com/v2/name/${neighbour[0]}`, 'Country not found');
+    })
+    .then(data => renderCountry(data[0], 'neighbour'))
+    .catch(err => {
+      console.log(err, "err")
+      console.error(`${err} err occur !`);
+      renderError(`Something went wrong ${err.message}. Try again!`)
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    })
 };
 
 btn.addEventListener('click', function () {
   getCountryData('portugal');
 });
-getCountryData('sdfsfsaf');
+getCountryData('australia');
